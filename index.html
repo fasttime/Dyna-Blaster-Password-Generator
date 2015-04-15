@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link rel="author" href="https://github.com/fasttime">
+<meta name="description" content="Password generator for the old classic game Dyna Blaster">
+<meta name="viewport" content="width=device-width">
+<script>
+<!--
+
+"use strict";
+
+var A1 = ["HRWY", "AFKN"]; // +1 flame size
+var B1 = ["BGLV", "CEOZ"]; // +1 flame size
+var C1 = ["FR", "BC"]; // +1 flame size
+var E1 = ["KW", "EV"]; // +1 flame size
+var G1 = ["GO", "NY"]; // +1 flame size
+var H1 = ["LZ", "AH"]; // +1 flame size
+
+var A2 = [["BL", "AF"], ["CZ", "HR"]]; // run fast, +4 bombs
+var E2 = [["WY", "EO"], ["KN", "GV"]]; // run fast, +4 bombs
+var F2 = [["KNWY", "AFHR"], ["EGOV", "BCLZ"]]; // run fast, +4 bombs
+
+var B3 = [["Q", "B"], ["I", "G"]]; // +4 flame size, +2 bombs
+var E3 = [["N", "E"], ["M", "P"]]; // +4 flame size, +2 bombs
+var G3 = ["GI", "LO"]; // +2 bombs
+var M3 = ["MP", "HJ"]; // +2 bombs
+var Q3 = ["BQ", "TV"]; // +2 bombs
+var S3 = [["J", "H"], ["S", "W"]]; // +4 flame size, +2 bombs
+var T3 = [["L", "O"], ["T", "V"]]; // +4 flame size, +2 bombs
+var W3 = ["EN", "SW"]; // +2 bombs
+
+var B4 = ["GL", "BT"]; // 8 bombs
+var E4 = ["JP", "ES"]; // 8 bombs
+var G4 = ["IS", "GW"]; // +4 flame size
+var H4 = ["NW", "HM"]; // 8 bombs
+var I4 = ["QV", "IO"]; // 8 bombs
+var J4 = ["JQ", "BH"]; // +4 flame size
+var L4 = ["LN", "EO"]; // +4 flame size
+var M4 = ["MT", "PV"]; // +4 flame size
+
+var A5 = ["HR", "AE"]; // +2 flame size
+var C5 = ["NU", "CL"]; // +2 flame size
+var E5 = [["CN", "LU"], ["ER", "AH"]]; // +2 flame size, 8 bombs
+var P5 = ["PS", "TV"]; // +2 flame size
+var T5 = [["KY", "GZ"], ["SV", "PT"]]; // +2 flame size, 8 bombs
+var Y5 = ["GK", "YZ"]; // +2 flame size
+
+var A6 = [["HK", "AY"], ["GR", "EZ"]]; // +8 flame size, +1 bomb
+var C6 = [["NP", "CT"], ["SU", "LV"]]; // +8 flame size, +1 bomb
+var E6 = [["N", "E"], ["C", "R"]]; // +8 flame size, +1 bomb
+var G6 = [["G", "T"], ["Z", "P"]]; // +8 flame size, +1 bomb
+var H6 = [["U", "A"], ["L", "H"]]; // +8 flame size, +1 bomb
+var K6 = [["K", "V"], ["Y", "S"]]; // +8 flame size, +1 bomb
+
+function createStage(round, level, flameSize, runFast, bombCount)
+{
+    var longFlameIndex = flameSize >> 3 & 0x01;
+    var midFlameIndex = flameSize >> 2 & 0x01;
+    var shortFlameIndex = flameSize >> 1 & 0x01;
+    var tinyFlameIndex = flameSize & 0x01;
+    var runFastIndex = runFast & 0x01;
+    var bomb8Index = bombCount >> 3 & 0x01;
+    var bomb4Index = bombCount >> 2 & 0x01;
+    var bomb2Index = bombCount >> 1 & 0x01;
+    var bomb1Index = bombCount & 0x01;
+    var cell1_1 = if2(round & 0x08, level & 0x02, inv(H1), inv(G1), C1, E1)[tinyFlameIndex];
+    var cell1_2 = if2(round & 0x08, level & 0x02, inv(E1), inv(C1), G1, H1)[tinyFlameIndex];
+    var cell1_3 = (level & 0x02 ? inv(B1) : A1)[tinyFlameIndex];
+    var cell1_4 = (level & 0x02 ? inv(A1) : B1)[tinyFlameIndex];
+    var cell2_1 = ever(F2[runFastIndex], bomb4Index, bomb8Index);
+    var cell2_2 = ever(inv(F2)[runFastIndex], bomb4Index, bomb8Index);
+    var cell2_3 = ever((round & 0x08 ? inv(A2) : E2)[runFastIndex], bomb4Index, bomb8Index);
+    var cell2_4 = ever((round & 0x08 ? inv(E2) : A2)[runFastIndex], bomb4Index, bomb8Index);
+    var cell3_1 = ever((round & 0x01 ? S3 : B3)[midFlameIndex], bomb2Index, bomb8Index);
+    var cell3_2 = ever((round & 0x01 ? T3 : E3)[midFlameIndex], bomb2Index, bomb8Index);
+    var cell3_3 = ever(round & 0x01 ? G3 : Q3, bomb2Index, bomb8Index);
+    var cell3_4 = ever(round & 0x01 ? M3 : W3, bomb2Index, bomb8Index);
+    var cell4_1 = if2(round & 0x02, level & 0x04, inv(H4), inv(B4), E4, I4)[bomb8Index];
+    var cell4_2 = if2(round & 0x02, level & 0x04, inv(I4), inv(E4), B4, H4)[bomb8Index];
+    var cell4_3 = if2(round & 0x02, level & 0x04, inv(L4), inv(M4), G4, J4)[midFlameIndex];
+    var cell4_4 = if2(round & 0x02, level & 0x04, inv(J4), inv(G4), M4, L4)[midFlameIndex];
+    var cell5_1 = if2(round & 0x04, level & 0x01, inv(Y5), inv(A5), P5, C5)[shortFlameIndex];
+    var cell5_2 = if2(round & 0x04, level & 0x01, inv(C5), inv(P5), A5, Y5)[shortFlameIndex];
+    var cell5_3 = (round & 0x04 ? inv(T5) : E5)[shortFlameIndex][bomb8Index];
+    var cell5_4 = (round & 0x04 ? inv(E5) : T5)[shortFlameIndex][bomb8Index];
+    var cell6_1 = ever((level & 0x08 ? inv(A6) : C6)[longFlameIndex], bomb1Index, bomb8Index);
+    var cell6_2 = ever((level & 0x08 ? inv(C6) : A6)[longFlameIndex], bomb1Index, bomb8Index);
+    var cell6_3 = ever(
+        (level & 0x08 ? inv(G6) : level & 0x01 ? H6 : E6)[longFlameIndex],
+        bomb1Index,
+        bomb8Index
+        );
+    var cell6_4 =
+        ever(
+        (level & 0x08 ? inv(H6) : level & 0x01 ? G6 : K6)[longFlameIndex],
+        bomb1Index,
+        bomb8Index
+        );
+    var stage =
+    [
+        ["M", "A", cell1_1, cell2_1, cell3_1, cell4_1, cell5_1, cell6_1],
+        ["M", "W", cell1_1, cell2_1, cell3_1, cell4_1, cell5_2, cell6_2],
+        ["M", "U", cell1_1, cell2_1, cell3_2, cell4_2, cell5_1, cell6_1],
+        ["M", "X", cell1_1, cell2_1, cell3_2, cell4_2, cell5_2, cell6_2],
+        ["M", "C", cell1_2, cell2_2, cell3_1, cell4_1, cell5_1, cell6_1],
+        ["M", "B", cell1_2, cell2_2, cell3_1, cell4_1, cell5_2, cell6_2],
+        ["M", "O", cell1_2, cell2_2, cell3_2, cell4_2, cell5_1, cell6_1],
+        ["M", "K", cell1_2, cell2_2, cell3_2, cell4_2, cell5_2, cell6_2],
+        ["U", "A", cell1_3, cell2_3, cell3_3, cell4_3, cell5_3, cell6_3],
+        ["U", "W", cell1_3, cell2_3, cell3_3, cell4_3, cell5_4, cell6_4],
+        ["U", "U", cell1_3, cell2_3, cell3_4, cell4_4, cell5_3, cell6_3],
+        ["U", "X", cell1_3, cell2_3, cell3_4, cell4_4, cell5_4, cell6_4],
+        ["U", "C", cell1_4, cell2_4, cell3_3, cell4_3, cell5_3, cell6_3],
+        ["U", "B", cell1_4, cell2_4, cell3_3, cell4_3, cell5_4, cell6_4],
+        ["U", "O", cell1_4, cell2_4, cell3_4, cell4_4, cell5_3, cell6_3],
+        ["U", "K", cell1_4, cell2_4, cell3_4, cell4_4, cell5_4, cell6_4]
+    ];
+    return stage;
+}
+
+function ever(term, index, everCond)
+{
+    return everCond ? term.join("") : term[index];
+}
+
+function increaseIndexes(formula, indexes)
+{
+    for (var i = 7; ; )
+    {
+        var limit = formula[i].length;
+        var index = indexes[i] + 1;
+        if (index < limit)
+        {
+            indexes[i] = index;
+            return true;
+        }
+        indexes[i] = 0;
+        if (!i) return false;
+        --i;
+    }
+}
+
+function if2(cond1, cond2, valueTT, valueTF, valueFT, valueFF)
+{
+    return cond1 ? cond2 ? valueTT : valueTF : cond2 ? valueFT: valueFF;
+}
+
+function inv(cell)
+{
+    return cell instanceof Array ? [inv(cell[1]), inv(cell[0])] : cell;
+}
+
+function makePassword(formula, indexes)
+{
+    var password = "";
+    for (var i = 0; i < 8; ++i) password += formula[i].charAt(indexes[i]);
+    return password;
+}
+
+function updatePasswords()
+{
+    var stageName = document.getElementById("stageSelect").value;
+    var content = document.getElementById("content");
+    if (_passwordList) content.removeChild(_passwordList);
+    _passwordList = null;
+    clearTimeout(_timeout);
+    _timeout = null;
+    if (stageName)
+    {
+        _passwordList = content.appendChild(document.createElement("UL"));
+        _stage =
+            createStage(
+            stageName[0] ^ 0,
+            stageName[2] ^ 0,
+            document.getElementById("flameSizeSelect").value ^ 0,
+            document.getElementById("runFastBox").checked,
+            document.getElementById("bombCountSelect").value ^ 0
+            );
+        _formulaIndex = 0;
+        _timeout = setTimeout(writePasswords);
+    }
+}
+
+function writePasswords()
+{
+    var formula = _stage[_formulaIndex];
+    var indexes = [0, 0, 0, 0, 0, 0, 0, 0];
+    do
+        _passwordList
+        .appendChild(document.createElement("LI"))
+        .appendChild(document.createTextNode(makePassword(formula, indexes)));
+    while (increaseIndexes(formula, indexes));
+    _timeout = ++_formulaIndex < _stage.length ? setTimeout(writePasswords) : null;
+}
+
+window.onload =
+    function ()
+    {
+        var stageSelect = document.getElementById("stageSelect");
+        for (var round = 1; round <= 8; ++round)
+        {
+            var optGroup = stageSelect.appendChild(document.createElement("OPTGROUP"));
+            optGroup.label = "Round " + round;
+            for (var level = 1; level <= 8; ++level)
+            {
+                var option = optGroup.appendChild(document.createElement("OPTION"));
+                option.text = round + "-" + level;
+                option.value = round + "-" + level;
+            }
+        }
+    };
+
+var _passwordList;
+var _stage;
+var _formulaIndex;
+var _timeout;
+
+-->
+</script>
+<style>
+<!--
+
+.selectionBar
+{
+    background-color: lightgray;
+    border-bottom: thin solid gray;
+    color: black;
+    font-family: sans-serif;
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    padding: .5em;
+}
+
+.selectionBar>* { padding: .075em 0; white-space: nowrap; }
+
+.separator { display: inline-block; width: 1em; }
+
+header { display: inline-block; font-weight: bold; }
+
+ul { font-family: monospace; list-style-type: none; }
+
+@media (max-width: 479px)
+{
+    .selectionBar>* { display: block; }
+    .selectionBar>header { text-align: center; }
+}
+
+-->
+</style>
+<title>Dyna Blaster Password Generator</title>
+</head>
+<body>
+<div class="selectionBar">
+
+<header>Dyna Blaster Password Generator</header>
+
+<span class="separator"></span>
+
+<label>
+Stage
+<select id="stageSelect" onchange="updatePasswords();" style="text-align: center;">
+<option label=" "></option>
+</select>
+</label>
+
+<span class="separator"></span>
+
+<label>
+Flame size
+<select id="flameSizeSelect" onchange="updatePasswords();" style="text-align: right;">
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option value="8">8</option>
+<option value="9">9</option>
+<option value="10">10</option>
+<option value="11">11</option>
+<option value="12">12</option>
+<option value="13">13</option>
+<option value="14">14</option>
+<option value="15">15</option>
+<option selected="selected" value="0">unlimited</option>
+</select>
+</label>
+
+<span class="separator"></span>
+
+<label>
+<input checked="checked" id="runFastBox" onchange="updatePasswords();" type="checkbox"/>
+Run fast
+</label>
+
+<span class="separator"></span>
+
+<label>
+Simultaneous bombs
+<select id="bombCountSelect" onchange="updatePasswords();" style="text-align: right;">
+<option value="0">0</option>
+<option value="1">1</option>
+<option value="2">2</option>
+<option value="3">3</option>
+<option value="4">4</option>
+<option value="5">5</option>
+<option value="6">6</option>
+<option value="7">7</option>
+<option selected="selected" value="8">8</option>
+</select>
+</label>
+
+</div>
+<div id="content" style="padding-top: 1.5em;"></div>

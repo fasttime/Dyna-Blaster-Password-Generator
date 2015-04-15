@@ -16,6 +16,7 @@
   },
   "author": "Francesco Trotta <ft@fasttime.org> (https://github.com/fasttime)",
   "files": [
+    "index.html",
     "LICENSE.txt",
     "package.json",
     "*.md"
