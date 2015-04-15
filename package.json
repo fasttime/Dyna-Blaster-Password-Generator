@@ -1,0 +1,27 @@
+{
+  "name": "dyna-blaster-password-generator",
+  "version": "0.1.0",
+  "description": "Password generator for the old classic game Dyna Blaster",
+  "keywords": [
+    "password",
+    "generator",
+    "dynablaster"
+  ],
+  "bugs": {
+    "url": "https://github.com/fasttime/Dyna-Blaster-Password-Generator/issues"
+  },
+  "license": {
+    "type": "ISC",
+    "url": "https://github.com/fasttime/Dyna-Blaster-Password-Generator/blob/master/LICENSE.txt"
+  },
+  "author": "Francesco Trotta <ft@fasttime.org> (https://github.com/fasttime)",
+  "files": [
+    "LICENSE.txt",
+    "package.json",
+    "*.md"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fasttime/Dyna-Blaster-Password-Generator.git"
+  }
+}
