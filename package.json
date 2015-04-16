@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "description": "Password generator for the old classic game Dyna Blaster",
   "keywords": [
-    "password",
+    "bomberman",
+    "dynablaster",
     "generator",
-    "dynablaster"
+    "password"
   ],
+  "homepage": "http://fasttime.org/Dyna-Blaster-Password-Generator/",
   "bugs": {
     "url": "https://github.com/fasttime/Dyna-Blaster-Password-Generator/issues"
   },
