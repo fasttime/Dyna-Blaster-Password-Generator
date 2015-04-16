@@ -1,7 +1,7 @@
 {
   "name": "dyna-blaster-password-generator",
   "version": "0.1.0",
-  "description": "Password generator for the old classic game Dyna Blaster",
+  "description": "Password generator for the MS-DOS classic game Dyna Blaster",
   "keywords": [
     "bomberman",
     "dynablaster",
@@ -21,6 +21,7 @@
     "index.html",
     "LICENSE.txt",
     "package.json",
+    "screenshot.png",
     "*.md"
   ],
   "repository": {
